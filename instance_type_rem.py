@@ -1,6 +1,6 @@
 import json
 import boto3
-
+import time
 client_ec2 = boto3.client('ec2')
 paginator = client_ec2.get_paginator('describe_instances')
 
@@ -49,8 +49,8 @@ def remediate(rem_list,dry_run,valid_instance_type):
     for item in rem_list:
         stop_instance(item,dry_run)
         if dry_run == 'False':
+            time.sleep(30)
             response = client_ec2.modify_instance_attribute(
-                Attribute='instanceType',
                 InstanceId=item[0],
                 InstanceType={
                     'Value': valid_instance_type[0]
@@ -64,7 +64,7 @@ def remediate(rem_list,dry_run,valid_instance_type):
             print("To stop set 'dry_run' to 'False'")
 
 #Stop instance scheduled for remediation
-def stop_instance(item):
+def stop_instance(item,dry_run):
     if dry_run == 'False':
         response = client_ec2.stop_instances(
             InstanceIds=[
@@ -78,7 +78,7 @@ def stop_instance(item):
         print("To stop set 'dry_run' to 'False'")
 
 #Start instance after remediation
-def start_instance(item):
+def start_instance(item,dryrun):
     if dry_run == 'False':
         response = client_ec2.start_instances(
             InstanceIds=[
