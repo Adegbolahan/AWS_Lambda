@@ -49,7 +49,7 @@ def remediate(rem_list,dry_run,valid_instance_type):
     for item in rem_list:
         stop_instance(item,dry_run)
         if dry_run == 'False':
-            response = client.modify_instance_attribute(
+            response = client_ec2.modify_instance_attribute(
                 Attribute='instanceType',
                 InstanceId=item[0],
                 InstanceType={
